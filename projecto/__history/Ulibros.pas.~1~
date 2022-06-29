@@ -1,0 +1,99 @@
+unit Ulibros;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, FireDAC.Stan.Intf,
+  FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
+  FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.Grids, Vcl.DBGrids,
+  Vcl.StdCtrls, Vcl.ExtCtrls;
+
+type
+  TLibreria = class(TForm)
+    Panel1: TPanel;
+    btninsertar: TButton;
+    btnactualizar: TButton;
+    btneliminar: TButton;
+    btncerrar: TButton;
+    DBGrid1: TDBGrid;
+    Query: TFDQuery;
+    DataSource1: TDataSource;
+    edtbuscar: TEdit;
+    btnbuscar: TButton;
+    Label1: TLabel;
+    procedure FormShow(Sender: TObject);
+    procedure btncerrarClick(Sender: TObject);
+    procedure btninsertarClick(Sender: TObject);
+    procedure btnactualizarClick(Sender: TObject);
+  private
+    { Private declarations }
+    procedure mostrar;
+    procedure refrescargrid;
+  public
+    { Public declarations }
+  end;
+
+var
+  Libreria: TLibreria;
+
+implementation
+
+{$R *.dfm}
+
+uses Umodulo, Ucurd;
+
+{ TLibreria }
+
+procedure TLibreria.btnactualizarClick(Sender: TObject);
+begin
+crud.Caption:='Actualizar Datos';
+crud.Hint:=DBGrid1.Fields[0].Text;
+crud.ShowModal;
+refrescargrid;
+end;
+
+procedure TLibreria.btncerrarClick(Sender: TObject);
+begin
+close;
+end;
+
+procedure TLibreria.btninsertarClick(Sender: TObject);
+begin
+crud.Caption:='Insertar Datos';
+crud.ShowModal;
+refrescargrid;
+
+end;
+
+procedure TLibreria.FormShow(Sender: TObject);
+begin
+mostrar;
+
+end;
+
+procedure TLibreria.mostrar;
+begin
+with Query do
+begin
+active := false;
+sql.Clear;
+SQL.Text:='Select * from libros';
+active:=true;
+
+end;
+end;
+
+procedure TLibreria.refrescargrid;
+begin
+with Query do
+begin
+  active:= false;
+  sql.Clear;
+  sql.Text := 'select * from libros where titulo LIKE'+ quotedstr('%'+edtbuscar.text+'%');
+  active:=true;
+end;
+end;
+
+end.

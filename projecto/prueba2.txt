@@ -1,0 +1,68 @@
+mostrar libros
+with fdquery1 do
+begin
+active := false;
+sql.Clear;
+SQL.Text:='Select * from libros';
+active:=true;
+
+end;
+
+refrescargrid
+with fdquery1 do
+begin
+  active := false;
+  sql.Clear;
+  sql.Text:= 'SELECT * FROM libros WHERE titulo like'+quotedstr(Insertar.edttitulo.Text);
+  active:=true;
+end;
+
+mostrar campos 
+actualizar.Hint:=DBGrid1.Fields[0].Text;
+actualizar.ShowModal;
+refrescargrid;
+procedure TActualizar.FormShow(Sender: TObject);
+begin
+with Libreria.FDQuery1 do
+begin
+  active :=false;
+  sql.Clear;
+  sql.Text:= 'SELECT * FROM libros WHERE id =' +self.Hint;
+  active:=true;
+end;
+edtid.Text := Libreria.FDQuery1.FieldByName('Id').AsString;
+edttitulo.Text:= Libreria.FDQuery1.FieldByName('titulo').AsString;
+edtautor.Text:= Libreria.FDQuery1.FieldByName('autor').AsString;
+edtprecio.Text:= Libreria.FDQuery1.FieldByName('precio').AsString;
+end;
+
+insertar 
+
+if (edttitulo.Text<>'') and (edtautor.Text<>'') then
+begin
+  with Libreria.FDQuery1 do
+  begin
+    active := false;
+    sql.Clear;
+    SQL.Text:= 'insert into libros (titulo,autor,precio)'+'values('+quotedstr(edttitulo.Text)+','+
+                     quotedstr(edtautor.Text)+','+quotedstr(edtprecio.Text)+')';
+    Showmessage(sql.Text);
+    ExecSQL;
+
+  end;
+  Showmessage('Se añadio un nuevolibro');
+  close;
+
+actualizar
+begin
+Libreria.FDQuery1.SQL.Text:='Update libros set titulo='+quotedstr(edttitulo.Text)+
+',autor = '+quotedstr(edtautor.Text)+',precio = '+quotedstr(edtprecio.Text)+'WHERE Id='+quotedstr(edtid.Text);
+Libreria.FDQuery1.ExecSQL;
+showmessage('Campo Actualizado');
+close;
+
+eliminar
+
+Libreria.FDQuery1.SQL.Text:='DELETE from libros WHERE Id='+quotedstr(edtid.Text);
+close;
+Libreria.FDQuery1.ExecSQL;
